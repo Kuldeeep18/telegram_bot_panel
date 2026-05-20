@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscriptions - TeleAdminPanel</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/sidebar') %>
+
+    <div class="app-container">
+        <header>
+            <h1 class="page-title">📅 Subscriptions</h1>
+            <p class="page-subtitle">Track and manage active subscription licenses for your Telegram Bot.</p>
+        </header>
+
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <div class="card" style="flex: 1; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Bot Users</div>
+                <div style="font-size: 2rem; color: var(--text-primary); font-weight: 700;"><%= typeof totalUsers !== 'undefined' ? totalUsers : 0 %></div>
+            </div>
+            <div class="card" style="flex: 1; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Active Subscriptions</div>
+                <div style="font-size: 2rem; color: var(--success); font-weight: 700;"><%= typeof subscriptions !== 'undefined' ? subscriptions.length : 0 %></div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subscriber</th>
+                        <th>Plan</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (subscriptions && subscriptions.length > 0) { %>
+                        <% subscriptions.forEach(subscription => { %>
+                            <tr>
+                                <td><strong><%= subscription.user %></strong></td>
+                                <td><%= subscription.plan %></td>
+                                <td><%= subscription.endDate %></td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-danger btn-small">Revoke</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                No active subscriptions found. Create one from the Dashboard!
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

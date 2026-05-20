@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - TeleAdminPanel</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/sidebar') %>
+
+    <div class="app-container">
+        <header class="flex-between">
+            <div>
+                <h1 class="page-title">💰 Payments</h1>
+                <p class="page-subtitle">Oversight of user invoices, signal purchases, and subscription revenue.</p>
+            </div>
+            <a href="#new" class="btn btn-primary">Log Payment</a>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>User Account</th>
+                        <th>Amount Paid</th>
+                        <th>Status</th>
+                        <th>Gateway</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% payments.forEach((payment, idx) => { %>
+                        <tr>
+                            <td><code>TXN-902<%= idx + 1 %></code></td>
+                            <td><strong><%= payment.sender %></strong></td>
+                            <td style="color: var(--success); font-weight: 700;"><%= payment.amount %></td>
+                            <td><span class="badge badge-success">Completed</span></td>
+                            <td>Stripe / Telegram Pay</td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 id="new" style="margin-bottom: 1.5rem; font-weight: 700;">Log a Manual Payment</h2>
+        <div class="form-container">
+            <form action="/payments/create" method="post">
+                <div class="form-group">
+                    <label>Sender Username</label>
+                    <input type="text" name="sender" placeholder="@username" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount ($)</label>
+                    <input type="text" name="amount" placeholder="$29.00" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Payment</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

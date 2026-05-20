@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Commands - TeleAdminPanel</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/sidebar') %>
+
+    <div class="app-container">
+        <header>
+            <h1 class="page-title">⚡ Bot Commands</h1>
+            <p class="page-subtitle">Configure custom slash commands for your Telegram Bot.</p>
+        </header>
+
+        <div class="split-view">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                            <th>Response Text</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (commands && commands.length > 0) { %>
+                            <% commands.forEach(cmd => { %>
+                                <tr>
+                                    <td><strong><span class="badge badge-success"><%= cmd.command %></span></strong></td>
+                                    <td><%= cmd.description %></td>
+                                    <td><span style="display: block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= cmd.response %>"><%= cmd.response %></span></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-small" onclick="deleteCommand('<%= cmd.id %>')">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                    No custom commands registered. Add one to see it sync with Telegram Menu!
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card form-panel">
+                <div class="card-title">Add New Command</div>
+                <form action="/commands/add" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="command">Command Trigger</label>
+                        <input type="text" id="command" name="command" class="form-control" placeholder="e.g. /help" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="description">Menu Description</label>
+                        <input type="text" id="description" name="description" class="form-control" placeholder="e.g. Show available help options" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="response">Bot Response Text</label>
+                        <textarea id="response" name="response" class="form-control" placeholder="Write the message the bot should reply with..." required style="min-height: 120px"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Command</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteCommand(id) {
+            if (confirm('Are you sure you want to delete this command?')) {
+                fetch(`/commands/delete/${id}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Failed to delete command.');
+                        }
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
