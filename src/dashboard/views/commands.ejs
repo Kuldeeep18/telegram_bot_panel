@@ -12,7 +12,7 @@
     <div class="app-container">
         <header>
             <h1 class="page-title">⚡ Bot Commands</h1>
-            <p class="page-subtitle">Configure custom slash commands for your Telegram Bot.</p>
+            <p class="page-subtitle">Configure custom slash commands for each of your Telegram Bots.</p>
         </header>
 
         <div class="split-view">
@@ -20,6 +20,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Bot</th>
                             <th>Command</th>
                             <th>Description</th>
                             <th>Response Text</th>
@@ -30,17 +31,18 @@
                         <% if (commands && commands.length > 0) { %>
                             <% commands.forEach(cmd => { %>
                                 <tr>
+                                    <td><span class="badge badge-info"><%= cmd.botId ? cmd.botId.name : 'Unknown' %></span></td>
                                     <td><strong><span class="badge badge-success"><%= cmd.command %></span></strong></td>
                                     <td><%= cmd.description %></td>
                                     <td><span style="display: block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= cmd.response %>"><%= cmd.response %></span></td>
                                     <td>
-                                        <button class="btn btn-danger btn-small" onclick="deleteCommand('<%= cmd.id %>')">Delete</button>
+                                        <button class="btn btn-danger btn-small" onclick="deleteCommand('<%= cmd._id %>')">Delete</button>
                                     </td>
                                 </tr>
                             <% }); %>
                         <% } else { %>
                             <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
                                     No custom commands registered. Add one to see it sync with Telegram Menu!
                                 </td>
                             </tr>
@@ -52,6 +54,18 @@
             <div class="card form-panel">
                 <div class="card-title">Add New Command</div>
                 <form action="/commands/add" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="botId">Select Bot</label>
+                        <select id="botId" name="botId" class="form-control" required>
+                            <% if (typeof bots !== 'undefined' && bots.length > 0) { %>
+                                <% bots.forEach(bot => { %>
+                                    <option value="<%= bot._id %>"><%= bot.name %></option>
+                                <% }); %>
+                            <% } else { %>
+                                <option value="">No bots available - Create a bot first</option>
+                            <% } %>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label class="form-label" for="command">Command Trigger</label>
                         <input type="text" id="command" name="command" class="form-control" placeholder="e.g. /help" required>

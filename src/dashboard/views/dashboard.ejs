@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TeleAdminPanel</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/sidebar') %>
+    
+    <div class="app-container">
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 class="page-title">📊 Dashboard</h1>
+                <p class="page-subtitle">Welcome back <%= user ? user.username : 'Administrator' %>. Here's your system overview.</p>
+            </div>
+            <% if (user) { %>
+            <button onclick="document.getElementById('addBotModal').style.display='block'" class="btn btn-primary">+ Add New Bot</button>
+            <% } else { %>
+            <a href="/login" class="btn btn-primary">Login to Manage Bots</a>
+            <% } %>
+        </header>
+
+        <% if (user) { %>
+        <h2 style="margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700;">My Bots</h2>
+        <div class="grid-container" style="margin-bottom: 2rem;">
+            <% if (typeof userBots !== 'undefined' && userBots.length > 0) { %>
+                <% userBots.forEach(bot => { %>
+                    <div class="card">
+                        <div class="card-badge <%= bot.status === 'online' ? 'badge-info' : 'badge-danger' %>"><%= bot.status %></div>
+                        <div class="card-title"><%= bot.name %></div>
+                        <div class="card-value" style="font-size: 1.2rem; margin-top: 0.5rem;"><%= bot.botType.toUpperCase() %></div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <p>You haven't created any bots yet.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Add Bot Modal -->
+        <div id="addBotModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; backdrop-filter: blur(4px);">
+            <div style="background:var(--bg-card); border: 1px solid var(--border-color); color:var(--text-primary); backdrop-filter: blur(12px); margin: 10% auto; padding:2rem; width:400px; border-radius:var(--border-radius); box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                <h3 style="margin-bottom: 1.5rem; font-weight: 700;">Add New Bot</h3>
+                <form action="/bots/create" method="post">
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Bot Name</label>
+                        <input type="text" name="name" class="form-control" style="width:100%" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Bot Type</label>
+                        <select name="botType" class="form-control" style="width:100%">
+                            <option value="telegram">Telegram Bot</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Bot Token</label>
+                        <input type="text" name="token" class="form-control" style="width:100%" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Start Bot</button>
+                    <button type="button" class="btn" style="width:100%; margin-top:0.5rem;" onclick="document.getElementById('addBotModal').style.display='none'">Cancel</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
+
+        <div class="grid-container">
+            <div class="card">
+                <div class="card-badge badge-info">Active</div>
+                <div class="card-title">Bot Status</div>
+                <div class="card-value" style="color: var(--success); font-size: 1.5rem; margin-top: 0.5rem;">Online & Polling</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Users</div>
+                <div class="card-value"><%= typeof totalUsers !== 'undefined' ? totalUsers : 0 %></div>
+            </div>
+            <div class="card">
+                <div class="card-title">Monthly Revenue</div>
+                <div class="card-value">$<%= typeof revenue !== 'undefined' ? revenue : 0 %></div>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 1.5rem; font-weight: 700;">System Controls & Quick Actions</h2>
+        <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">Broadcast Message</h3>
+                <form action="/messages/send" method="post">
+                    <div class="form-group">
+                        <label>Sender Tag</label>
+                        <input type="text" name="sender" value="Admin" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea name="content" rows="3" placeholder="Type a message to broadcast..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Broadcast</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">Add Subscription</h3>
+                <form action="/subscriptions/create" method="post">
+                    <div class="form-group">
+                        <label>User Handle</label>
+                        <input type="text" name="subscriptionDetails[user]" placeholder="@username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Plan</label>
+                        <select name="subscriptionDetails[plan]">
+                            <option value="Premium Signal Service">Premium Signal Service</option>
+                            <option value="Elite Auto-Trader">Elite Auto-Trader</option>
+                            <option value="Basic Telegram Alerts">Basic Telegram Alerts</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" name="subscriptionDetails[endDate]" value="30 Days" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Subscription</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
