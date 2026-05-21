@@ -19,18 +19,21 @@ const executionWorker = new Worker('bot-events', async (job) => {
             status: 'processing'
         });
 
-        // 2. Register user dynamically for broadcast (MVP)
-        const store = require('../utils/mockStore');
-        const userExists = store.users.some(u => u.id === String(chatId));
-        if (!userExists) {
-            store.users.push({
-                id: String(chatId),
-                username: `User_${chatId}`,
-                email: `user_${chatId}@telegram.com`,
-                dateJoined: new Date().toLocaleDateString(),
-                role: 'user'
-            });
-            console.log(`[Worker] Registered new user ${chatId} for broadcasts.`);
+        // 2. Register user dynamically to MongoDB for subscriptions/broadcasts
+        const Subscriber = require('../models/subscriber');
+        try {
+            await Subscriber.findOneAndUpdate(
+                { botId, chatId: String(chatId) },
+                { 
+                    botId, 
+                    chatId: String(chatId),
+                    username: `User_${chatId}` // Defaulting since Telegram username isn't passed via simple text hook yet
+                },
+                { upsert: true, new: true }
+            );
+            console.log(`[Worker] Ensured subscriber ${chatId} is registered for bot ${botId}.`);
+        } catch (err) {
+            console.error(`[Worker] Error registering subscriber:`, err.message);
         }
 
         // 3. Determine bot and respond

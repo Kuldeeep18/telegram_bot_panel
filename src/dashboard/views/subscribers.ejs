@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribers - TeleAdminPanel</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/sidebar') %>
+
+    <div class="app-container">
+        <header>
+            <h1 class="page-title">👥 Audience & Subscribers</h1>
+            <p class="page-subtitle">View all users who have interacted with your Telegram bots.</p>
+        </header>
+
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+            <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 0;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Total Subscribers</span>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin-top: 0.25rem;"><%= subscribers ? subscribers.length : 0 %></div>
+            </div>
+
+            <div class="form-container" style="max-width: 300px; padding: 1rem;">
+                <form action="/subscribers" method="GET" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                        <label for="botId" style="font-size: 0.8rem;">Filter by Bot</label>
+                        <select name="botId" id="botId" class="form-control" onchange="this.form.submit()">
+                            <option value="">All Bots</option>
+                            <% if (typeof bots !== 'undefined' && bots.length > 0) { %>
+                                <% bots.forEach(bot => { %>
+                                    <option value="<%= bot._id %>" <%= filterBotId === bot._id.toString() ? 'selected' : '' %>>
+                                        <%= bot.name %>
+                                    </option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subscriber ID / Chat ID</th>
+                        <th>Username</th>
+                        <th>Subscribed Bot</th>
+                        <th>First Seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (subscribers && subscribers.length > 0) { %>
+                        <% subscribers.forEach(sub => { %>
+                            <tr>
+                                <td><code style="background: rgba(255,255,255,0.05); padding: 0.25rem 0.5rem; border-radius: 4px;"><%= sub.chatId %></code></td>
+                                <td><%= sub.username %></td>
+                                <td>
+                                    <span class="badge badge-info"><%= sub.botId ? sub.botId.name : 'Unknown Bot' %></span>
+                                </td>
+                                <td style="color: var(--text-secondary);"><%= new Date(sub.joinedAt).toLocaleString() %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                No subscribers found. Ensure your bot is online and someone has messaged it!
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
