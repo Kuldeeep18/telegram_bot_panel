@@ -12,57 +12,94 @@
     <div class="app-container">
         <header>
             <h1 class="page-title">📈 Analytics & Metrics</h1>
-            <p class="page-subtitle">Historical user growth, payment statistics, and bot conversion metrics.</p>
+            <p class="page-subtitle">Real-time platform statistics from your bots, users, and command executions.</p>
         </header>
 
         <div class="grid-container">
             <div class="card">
-                <div class="card-title">Total Active Users</div>
+                <div class="card-title">Registered Users</div>
                 <div class="card-value" style="color: var(--primary);"><%= totalUsers %></div>
-                <p style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem;">↑ 12% increase this month</p>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Platform accounts</p>
             </div>
             <div class="card">
-                <div class="card-title">Successful Purchases</div>
-                <div class="card-value" style="color: var(--success);"><%= totalPayments %></div>
-                <p style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem;">↑ 8% conversion rate</p>
+                <div class="card-title">Your Bots</div>
+                <div class="card-value" style="color: var(--success);"><%= totalBots %></div>
+                <p style="font-size: 0.85rem; color: var(--success); margin-top: 0.5rem;"><%= onlineBots %> online now</p>
             </div>
             <div class="card">
-                <div class="card-title">Conversion Rate</div>
-                <div class="card-value" style="color: var(--accent);">30%</div>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Industry average: 18%</p>
+                <div class="card-title">Custom Commands</div>
+                <div class="card-value" style="color: var(--accent);"><%= totalCommands %></div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Across all your bots</p>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Executions</div>
+                <div class="card-value" style="color: var(--warning);"><%= totalExecutions %></div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Messages processed via queue</p>
             </div>
         </div>
 
-        <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Monthly Conversion Funnel</h2>
+        <% if (dailyStats && dailyStats.length > 0) { %>
+        <h2 style="margin-bottom: 1.5rem; font-weight: 700;">📊 Daily Activity (Last 7 Days)</h2>
+        <div class="table-container" style="margin-bottom: 2.5rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Messages Processed</th>
+                        <th>Activity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% dailyStats.forEach(day => { %>
+                        <tr>
+                            <td><strong><%= day._id %></strong></td>
+                            <td><%= day.count %></td>
+                            <td>
+                                <div style="background: rgba(59, 130, 246, 0.15); border-radius: 4px; height: 24px; width: <%= Math.min(day.count * 8, 100) %>%; min-width: 20px; display: flex; align-items: center; justify-content: center;">
+                                    <span style="font-size: 0.75rem; color: var(--primary); font-weight: 600;"><%= day.count %></span>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <% } %>
+
+        <h2 style="margin-bottom: 1.5rem; font-weight: 700;">🕐 Recent Executions</h2>
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Month</th>
-                        <th>User Signup Growth</th>
-                        <th>Completed Sales</th>
-                        <th>Ratio</th>
+                        <th>Bot</th>
+                        <th>Command / Message</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>January</td>
-                        <td>100 users</td>
-                        <td>30 sales</td>
-                        <td><span class="badge badge-info">30%</span></td>
-                    </tr>
-                    <tr>
-                        <td>February</td>
-                        <td>120 users</td>
-                        <td>35 sales</td>
-                        <td><span class="badge badge-info">29.1%</span></td>
-                    </tr>
-                    <tr>
-                        <td>March</td>
-                        <td>150 users</td>
-                        <td>45 sales</td>
-                        <td><span class="badge badge-info">30%</span></td>
-                    </tr>
+                    <% if (recentExecutions && recentExecutions.length > 0) { %>
+                        <% recentExecutions.forEach(exec => { %>
+                            <tr>
+                                <td><span class="badge badge-info"><%= exec.botId ? exec.botId.name : 'Unknown' %></span></td>
+                                <td><code style="background: rgba(255,255,255,0.05); padding: 0.25rem 0.5rem; border-radius: 4px;"><%= exec.command %></code></td>
+                                <td>
+                                    <% if (exec.status === 'completed' || exec.status === 'processing') { %>
+                                        <span class="badge badge-success"><%= exec.status %></span>
+                                    <% } else { %>
+                                        <span class="badge badge-warning"><%= exec.status %></span>
+                                    <% } %>
+                                </td>
+                                <td style="color: var(--text-secondary); font-size: 0.85rem;"><%= exec.executedAt ? new Date(exec.executedAt).toLocaleString() : 'N/A' %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                                No executions yet. Send a message to one of your bots to see activity here!
+                            </td>
+                        </tr>
+                    <% } %>
                 </tbody>
             </table>
         </div>

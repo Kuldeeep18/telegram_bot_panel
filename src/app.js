@@ -48,7 +48,6 @@ const indexRoutes = require('./routes/index');
 const userRoutes = require('./routes/users');
 const subscriptionRoutes = require('./routes/subscriptions');
 const messageRoutes = require('./routes/messages');
-const paymentRoutes = require('./routes/payments');
 const statisticRoutes = require('./routes/statistics');
 const commandRoutes = require('./routes/commands');
 
@@ -62,7 +61,6 @@ app.use('/', indexRoutes);
 app.use('/users', userRoutes);
 app.use('/subscriptions', subscriptionRoutes);
 app.use('/messages', messageRoutes);
-app.use('/payments', paymentRoutes);
 app.use('/statistics', statisticRoutes);
 app.use('/commands', commandRoutes);
 
