@@ -3,7 +3,6 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 
-// Initialize DB and Telegram connections
 // Initialize DB, Telegram connections, and Workers
 const connectDB = require('./core/db');
 const Bot = require('./models/bot');
@@ -46,7 +45,6 @@ const authRoutes = require('./routes/auth');
 const botsRoutes = require('./routes/bots');
 const indexRoutes = require('./routes/index');
 const userRoutes = require('./routes/users');
-const subscriptionRoutes = require('./routes/subscriptions');
 const messageRoutes = require('./routes/messages');
 const statisticRoutes = require('./routes/statistics');
 const commandRoutes = require('./routes/commands');
@@ -59,7 +57,6 @@ app.use('/', authRoutes);
 app.use('/bots', botsRoutes);
 app.use('/', indexRoutes);
 app.use('/users', userRoutes);
-app.use('/subscriptions', subscriptionRoutes);
 app.use('/messages', messageRoutes);
 app.use('/statistics', statisticRoutes);
 app.use('/commands', commandRoutes);
